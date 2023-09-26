@@ -30,7 +30,23 @@ Route::prefix("v1")->group(function () {
             Route::put("change-password", 'changePassword');
             Route::post("logout", 'logout');
         });
+
+
+        Route::controller(PhotoController::class)->prefix("photo")->group(function () {
+            Route::post("store", 'store');
+            Route::delete("delete/{id}", 'destroy');
+            Route::post('multiple-delete', 'deleteMultiplePhotos');
+            Route::get("trash", 'trash');
+            Route::patch("restore/{id}", "restore");
+            Route::post("force-delete/{id}", "forceDelete");
+            Route::post("clear-trash", "clearTrash");
+        });
     });
 
     Route::post('login', [AuthController::class, 'login']);
+
+    Route::controller(PhotoController::class)->prefix("photo")->group(function () {
+        Route::get("list", "index");
+        Route::get("show/{id}", "show");
+    });
 });
