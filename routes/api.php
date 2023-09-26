@@ -16,13 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 
 Route::prefix("v1")->group(function () {
 
     Route::middleware('jwt')->group(function () {
+
+        Route::controller(AuthController::class)->group(function () {
+            Route::post('register', "register");
+            Route::get('user-lists', 'showUserLists');
+            Route::get('your-profile', 'yourProfile');
+            Route::put('edit', "edit");
+            Route::get('user-profile/{id}', 'checkUserProfile');
+            Route::put("change-password", 'changePassword');
+            Route::post("logout", 'logout');
+        });
     });
+
+    Route::post('login', [AuthController::class, 'login']);
 });
