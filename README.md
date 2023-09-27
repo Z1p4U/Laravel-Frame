@@ -5,7 +5,7 @@
 #### Login (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/login
+http://127.0.0.1:8000/api/v1/login
 ```
 
 | Arguments | Type   | Description                  |
@@ -18,7 +18,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/login
 #### Register (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/register
+http://127.0.0.1:8000/api/v1/register
 ```
 
 | Arguments             | Type   | Description                  |
@@ -32,25 +32,25 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/register
 #### Own Profile (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/your-profile
+http://127.0.0.1:8000/api/v1/your-profile
 ```
 
 #### Check Specific User Profile (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/user-profile/{id}
+http://127.0.0.1:8000/api/v1/user-profile/{id}
 ```
 
 #### Check User Lists (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/user-lists
+http://127.0.0.1:8000/api/v1/user-lists
 ```
 
 #### Edit User Info(Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/edit
+http://127.0.0.1:8000/api/v1/edit
 ```
 
 | Arguments | Type  | Description                       |
@@ -61,7 +61,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/edit
 #### Password Update (Put)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/update-password
+http://127.0.0.1:8000/api/v1/update-password
 ```
 
 | Arguments             | Type   | Description           |
@@ -73,5 +73,5 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/update-password
 #### Logout (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/logout
+http://127.0.0.1:8000/api/v1/logout
 ```
