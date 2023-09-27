@@ -1,4 +1,4 @@
-# Golden Yellow Travel
+# Template
 
 ## API Reference
 
