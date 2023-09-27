@@ -5,7 +5,7 @@
 #### Login (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/login
+http://127.0.0.1:8000/api/v1/login
 ```
 
 | Arguments | Type   | Description                  |
@@ -18,7 +18,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/login
 #### Register (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/register
+http://127.0.0.1:8000/api/v1/register
 ```
 
 | Arguments             | Type   | Description                  |
@@ -32,25 +32,25 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/register
 #### Own Profile (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/your-profile
+http://127.0.0.1:8000/api/v1/your-profile
 ```
 
 #### Check Specific User Profile (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/user-profile/{id}
+http://127.0.0.1:8000/api/v1/user-profile/{id}
 ```
 
 #### Check User Lists (Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/user-lists
+http://127.0.0.1:8000/api/v1/user-lists
 ```
 
 #### Edit User Info(Get)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/edit
+http://127.0.0.1:8000/api/v1/edit
 ```
 
 | Arguments | Type  | Description                       |
@@ -61,7 +61,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/edit
 #### Password Update (Put)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/update-password
+http://127.0.0.1:8000/api/v1/update-password
 ```
 
 | Arguments             | Type   | Description           |
@@ -73,7 +73,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/update-password
 #### Logout (Post)
 
 ```http
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/logout
+http://127.0.0.1:8000/api/v1/logout
 ```
 
 ## Media
@@ -83,7 +83,7 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/logout
 #### Store Photo (Post)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/store
+http://127.0.0.1:8000/api/v1/photo/store
 ```
 
 | Arguments | Type  | Description     |
@@ -93,25 +93,25 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/store
 #### Get Photo (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/list
+http://127.0.0.1:8000/api/v1/photo/list
 ```
 
 #### Show Photo (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/show/{id}
+http://127.0.0.1:8000/api/v1/photo/show/{id}
 ```
 
 #### Delete Photo (Del)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/delete/{id}
+http://127.0.0.1:8000/api/v1/photo/delete/{id}
 ```
 
 #### Multiple Photo Delete (Post)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/multiple-delete
+http://127.0.0.1:8000/api/v1/photo/multiple-delete
 ```
 
 | Arguments | Type  | Description          |
@@ -123,23 +123,23 @@ https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/multiple-dele
 #### Trash (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/trash
+http://127.0.0.1:8000/api/v1/photo/trash
 ```
 
 #### Restore (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/restore/{id}
+http://127.0.0.1:8000/api/v1/photo/restore/{id}
 ```
 
 #### Force Delete (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/force-delete/{id}
+http://127.0.0.1:8000/api/v1/photo/force-delete/{id}
 ```
 
 #### Clear Trash (Get)
 
 ```https
-https://api.goldenyellowtravel.yolodigitalmyanmar.com/api/v1/photo/clear-trash
+http://127.0.0.1:8000/api/v1/photo/clear-trash
 ```
