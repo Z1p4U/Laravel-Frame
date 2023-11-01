@@ -98,7 +98,7 @@ class AuthController extends Controller
 
     public function showUserLists()
     {
-        if (Auth::user()->position !== "admin") {
+        if (Auth::user()->role !== "admin") {
             return response()->json([
                 "message" => "You Are Not Allowed"
             ]);
