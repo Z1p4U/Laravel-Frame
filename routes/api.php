@@ -38,6 +38,7 @@ Route::prefix("v1")->group(function () {
             Route::delete("delete/{id}", 'destroy');
             Route::post('multiple-delete', 'deleteMultiplePhotos');
             Route::get("trash", 'trash');
+            Route::patch("deleted-photo/{id}", "deletedPhoto");
             Route::patch("restore/{id}", "restore");
             Route::post("force-delete/{id}", "forceDelete");
             Route::post("clear-trash", "clearTrash");
