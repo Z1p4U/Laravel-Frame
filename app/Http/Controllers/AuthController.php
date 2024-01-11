@@ -14,13 +14,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * APIs for user login
-     *
-     * @bodyParam username required.
-     * @bodyParam password required.
-     */
-
     public function login(LoginRequest $request)
     {
         $payload = collect($request->validated());
@@ -38,9 +31,6 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * APIs for user login out
-     */
     public function logout()
     {
         auth()->logout();
@@ -48,19 +38,11 @@ class AuthController extends Controller
         return $this->success('User successfully signed out', null);
     }
 
-    /**
-     * APIs for refresh token
-     */
     public function refresh()
     {
         return $this->createNewToken(auth()->refresh());
     }
 
-    /**
-     * Change Password
-     *
-     * @bodyParam password.
-     */
     public function changePassword(ChangePasswordRequest $request, $id)
     {
         $payload = collect($request->validated());
@@ -68,7 +50,7 @@ class AuthController extends Controller
         $authId = auth()->user()->id;
 
         if ($authId !== $id) {
-            return $this->unauthenticated('you do not have permission to change password');
+            return $this->unauthenticated('You do not have permission to change password');
         }
 
         DB::beginTransaction();

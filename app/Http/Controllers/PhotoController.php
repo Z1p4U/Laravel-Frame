@@ -7,32 +7,30 @@ use App\Http\Requests\UpdatePhotoRequest;
 use App\Http\Resources\PhotoDetailResource;
 use App\Http\Resources\PhotoResource;
 use App\Models\Photo;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PhotoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $photos = Photo::latest("id")->searchQuery()->sortingQuery()->paginationQuery();
+        $photos = Photo::latest("id")
+            ->searchQuery()
+            ->sortingQuery()
+            ->paginationQuery();
 
         if (empty($photos->toArray())) {
-            return response()->json([
-                "message" => "There is no photo"
-            ]);
+            return $this->notFound('There is no photo');
         }
 
-        return PhotoResource::collection($photos);
-        // return $this->success("Photo List", $photos);
-    }
+        $photoResource = PhotoResource::collection($photos);
 
-    /**
-     * Store a newly created resource in storage.
-     */
+        return $this->success("Photo List", $photos);
+    }
 
     private function formatBytes($bytes, $precision = 2)
     {
@@ -47,160 +45,213 @@ class PhotoController extends Controller
 
     public function store(StorePhotoRequest $request)
     {
-        if ($request->hasFile('photos')) {
-            $photos = $request->file('photos');
-            $savedPhotos = [];
-            foreach ($photos as $photo) {
-                $fileSize = $photo->getSize();
-                $name = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                $savedPhoto = $photo->store("public/photo");
-                $savedPhotos[] = [
-                    "url" => $savedPhoto,
-                    "name" => $name,
-                    "extension" => $photo->extension(),
-                    "user_id" => Auth::id(),
-                    "size" => $this->formatBytes($fileSize),
-                    "created_at" => now(),
-                    "updated_at" => now()
-                ];
-            }
-            Photo::insert($savedPhotos);
-        }
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('photos')) {
+                $photos = $request->file('photos');
+                $savedPhotos = [];
+                foreach ($photos as $photo) {
+                    $fileSize = $photo->getSize();
+                    $name = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+                    $savedPhoto = $photo->store("public/photo");
+                    $savedPhotos[] = [
+                        "url" => $savedPhoto,
+                        "name" => $name,
+                        "extension" => $photo->extension(),
+                        "user_id" => Auth::id(),
+                        "size" => $this->formatBytes($fileSize),
+                        "created_at" => now(),
+                        "updated_at" => now()
+                    ];
+                }
+                Photo::insert($savedPhotos);
 
-        return response()->json([
-            "message" => "Photo Uploaded Successfully",
-            "id" => $request->id,
-        ], 200);
+                DB::commit();
+
+                return $this->success('Photo Uploaded Successfully', $savedPhotos);
+            }
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
-        $photo = Photo::find($id);
+        DB::beginTransaction();
+        try {
+            $photo = Photo::findOrFail($id);
+            $photoDetailResource = new PhotoDetailResource($photo);
 
-        if (is_null($photo)) {
-            return response()->json([
-                "message" => "there is no photo"
-            ]);
+            DB::commit();
+
+            return $this->success('Photo Detail', $photo);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        $this->authorize('view', $photo);
 
         return new PhotoDetailResource($photo);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePhotoRequest $request, Photo $photo)
-    {
-        // return $request;
     }
 
     public function deleteMultiplePhotos(Request $request)
     {
         $photoId = $request->photos;
         $photos = Photo::whereIn("id", $photoId)->get();
-
-        if (empty($photos)) {
-            return response()->json([
-                "message" => "There is no Photo to delete"
-            ]);
-        }
-
-        foreach ($photos as $photo) {
-            if (Auth::id() != $photo->user_id) {
+        DB::beginTransaction();
+        try {
+            if (empty($photos)) {
                 return response()->json([
-                    'message' => "You are not allowed"
+                    "message" => "There is no Photo to delete"
                 ]);
             }
+
+            Photo::whereIn('id', $photoId)->delete();
+
+            return $this->success('Photos deleted successfully', $photos);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        Photo::whereIn('id', $photoId)->delete();
-        // Storage::delete($photos->pluck('url')->toArray());
-        return response()->json([
-            "message" => "Photos deleted successfully"
-        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $photo = Photo::find($id);
+        DB::beginTransaction();
+        try {
+            $photo = Photo::findOrFail($id);
 
-        if (is_null($photo)) {
-            return response()->json([
-                "message" => "There is no photo"
-            ]);
+            $photo->delete($id);
+
+            DB::commit();
+
+            return $this->success('Photo deleted successfully', $photo);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $this->authorize('delete', $photo);
-
-        $photo->delete();
-        return response()->json([
-            "message" => "Photo deleted successfully"
-        ], 200);
     }
 
     public function trash()
     {
-        $softDeletedPhotos = Photo::onlyTrashed()->get();
+        $softDeletedPhotos = Photo::onlyTrashed()
+            ->searchQuery()
+            ->sortingQuery()
+            ->paginationQuery();
 
-        return response()->json(["data" => PhotoResource::collection($softDeletedPhotos)], 200);
+        if (empty($softDeletedPhotos->toArray())) {
+            return $this->notFound("Trash is empty");
+        }
+
+        $photoResource = PhotoResource::collection($softDeletedPhotos);
+
+        return $this->success('Trash Bin', $softDeletedPhotos);
     }
 
     public function deletedPhoto($id)
     {
-        $photo = Photo::onlyTrashed()->find($id);
+        try {
+            $photo = Photo::onlyTrashed()
+                ->findOrFail($id);
 
+            $showPhoto = new PhotoDetailResource($photo);
 
-        if (is_null($photo)) {
-            return response()->json([
-                "message" => "There is no photo"
-            ]);
+            return $this->success('Deleted Photo', $showPhoto);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
         }
-
-        $showPhoto = new PhotoDetailResource($photo);
-
-        return $this->success('Trash', $showPhoto);
     }
 
     public function restore(string $id)
     {
-        $photo = Photo::withTrashed()->find($id);
+        DB::beginTransaction();
+        try {
+            $photo = Photo::withTrashed()->findOrFail($id);
 
-        $photo->restore();
+            $photo->restore($id);
 
-        return response()->json(['message' => 'Photo restored from trash'], 200);
+            DB::commit();
+
+            return $this->success('Photo restored successfully', $photo);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function forceDelete(string $id)
     {
-        $photo = Photo::onlyTrashed()->find($id);
+        DB::beginTransaction();
+        try {
+            $photo = Photo::onlyTrashed()
+                ->findOrFail($id);
 
-        if (is_null($photo)) {
-            return response()->json([
-                "message" => "There is no photo"
-            ]);
+            $photo->forceDelete($id);
+
+            Storage::delete($photo->url);
+
+            DB::commit();
+
+            return $this->success('Photo removed permanently', $photo);
+        } catch (ModelNotFoundException $e) {
+            DB::rollback();
+            $errorMessage = 'Photo not found';
+
+            return response()->json(['error' => $errorMessage], 404);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $photo->forceDelete();
-        Storage::delete($photo->url);
-
-        return response()->json(['message' => 'Photo is deleted permanently'], 200);
     }
 
     public function clearTrash()
     {
-        $photos = Photo::onlyTrashed()->get();
+        DB::beginTransaction();
+        try {
 
-        foreach ($photos as $photo) {
-            $photo->forceDelete();
-            Storage::delete($photo->url);
+            $photos = Photo::onlyTrashed()->get();
+
+            foreach ($photos as $photo) {
+                $photo->forceDelete();
+                Storage::delete($photo->url);
+            }
+
+            DB::commit();
+
+            return $this->success('Trash Cleared', $photo);
+        } catch (Exception $e) {
+            DB::rollback();
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return response()->json(['message' => 'Trash Cleared'], 200);
     }
 }
