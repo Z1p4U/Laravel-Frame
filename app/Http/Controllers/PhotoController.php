@@ -86,7 +86,7 @@ class PhotoController extends Controller
 
             DB::commit();
 
-            return $this->success('Photo Detail', $photo);
+            return $this->success('Photo Detail', $photoDetailResource);
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             $errorMessage = 'Photo not found';
@@ -97,8 +97,6 @@ class PhotoController extends Controller
 
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return new PhotoDetailResource($photo);
     }
 
     public function deleteMultiplePhotos(Request $request)
